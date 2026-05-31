@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOTS Esports</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#0d0d0d;--white:#f8f8f5;--red:#e8001d;--red-dark:#b50017;
+  --gray-100:#f0efeb;--gray-200:#e0dfd9;--gray-400:#9e9d97;--gray-600:#5c5b57;--gray-800:#2a2927;
+  --font-display:'Bebas Neue',sans-serif;--font-condensed:'Barlow Condensed',sans-serif;--font-body:'Barlow',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--white);color:var(--black);min-height:100vh;font-size:16px;line-height:1.6}
+#cookie-banner{position:fixed;bottom:0;left:0;right:0;background:var(--black);color:#ccc;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;z-index:9999;font-size:13px;flex-wrap:wrap}
+#cookie-banner a{color:var(--white);text-decoration:underline}
+.ck-btns{display:flex;gap:.6rem;flex-shrink:0}
+.btn-ck-ok{background:var(--red);color:#fff;border:none;padding:.45rem 1.1rem;font-family:var(--font-condensed);font-size:13px;font-weight:600;letter-spacing:.05em;cursor:pointer;transition:opacity .2s}
+.btn-ck-ok:hover{opacity:.85}
+.btn-ck-no{background:transparent;color:#888;border:1px solid #444;padding:.45rem 1.1rem;font-family:var(--font-condensed);font-size:13px;cursor:pointer;transition:color .2s}
+.btn-ck-no:hover{color:#fff}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .25s}
+.overlay.active{opacity:1;pointer-events:all}
+.modal{background:var(--white);width:100%;max-width:420px;padding:2.25rem;transform:translateY(12px);transition:transform .25s}
+.overlay.active .modal{transform:translateY(0)}
+.modal-head{display:flex;align-items:center;gap:.6rem;margin-bottom:1.75rem}
+.modal-head .logo-t{width:30px;height:30px;background:var(--red);display:flex;align-items:center;justify-content:center}
+.modal-head .logo-t svg{width:18px;height:18px}
+.modal-head h1{font-family:var(--font-display);font-size:26px;letter-spacing:.05em;line-height:1}
+.modal h2{font-family:var(--font-condensed);font-size:22px;font-weight:700;letter-spacing:.03em;margin-bottom:.2rem}
+.modal p.sub{font-size:13px;color:var(--gray-600);margin-bottom:1.5rem}
+.form-err{background:#fff0f0;border:1px solid #fca5a5;color:#b91c1c;padding:.5rem .75rem;font-size:13px;margin-bottom:.9rem;display:none}
+.form-err.on{display:block}
+.fg{margin-bottom:.9rem}
+.fg label{display:block;font-family:var(--font-condensed);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-600);margin-bottom:.35rem}
+.fg input{width:100%;border:1px solid var(--gray-200);background:#fff;padding:.6rem .8rem;font-family:var(--font-body);font-size:14px;color:var(--black);outline:none;transition:border-color .2s;border-radius:0;-webkit-appearance:none}
+.fg input:focus{border-color:var(--red)}
+.fg-check{display:flex;align-items:flex-start;gap:.5rem;margin:.9rem 0}
+.fg-check input{width:15px;height:15px;flex-shrink:0;margin-top:2px;accent-color:var(--red);cursor:pointer}
+.fg-check label{font-size:12px;color:var(--gray-600);line-height:1.5;cursor:pointer}
+.fg-check a{color:var(--black);text-decoration:underline}
+.btn-modal{width:100%;background:var(--red);color:#fff;border:none;padding:.8rem;font-family:var(--font-condensed);font-size:15px;font-weight:700;letter-spacing:.08em;cursor:pointer;transition:opacity .2s;margin-top:.3rem}
+.btn-modal:hover{opacity:.87}
+.modal-sw{text-align:center;margin-top:1rem;font-size:12px;color:var(--gray-600)}
+.modal-sw a{color:var(--black);text-decoration:underline;cursor:pointer;font-weight:600}
+header{background:var(--black);position:sticky;top:0;z-index:100}
+.header-bar{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:58px;max-width:1320px;margin:0 auto;gap:1.5rem}
+.logo{display:flex;align-items:center;gap:.5rem;text-decoration:none;flex-shrink:0}
+.logo-t{width:30px;height:30px;background:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-t svg{width:18px;height:18px}
+.logo-name{font-family:var(--font-display);font-size:24px;color:var(--white);letter-spacing:.08em;line-height:1}
+.logo-sport{font-family:var(--font-condensed);font-size:11px;color:var(--gray-400);letter-spacing:.12em;text-transform:uppercase;margin-left:2px;margin-top:2px}
+.header-nav{display:flex;gap:0;flex:1;max-width:580px}
+.header-nav a{font-family:var(--font-condensed);font-size:13px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--gray-400);text-decoration:none;padding:.35rem .85rem;transition:color .2s;white-space:nowrap}
+.header-nav a:hover,.header-nav a.active{color:var(--white)}
+.header-nav a.active{border-bottom:2px solid var(--red)}
+.header-actions{display:flex;align-items:center;gap:.6rem;flex-shrink:0}
+.btn-hdr{font-family:var(--font-condensed);font-size:13px;font-weight:700;letter-spacing:.06em;padding:.42rem 1rem;cursor:pointer;border:1px solid #444;color:var(--gray-400);background:transparent;transition:all .2s;white-space:nowrap}
+.btn-hdr:hover{color:var(--white);border-color:var(--gray-400)}
+.btn-hdr-red{background:var(--red);border-color:var(--red);color:#fff}
+.btn-hdr-red:hover{opacity:.87;color:#fff}
+.user-av{width:32px;height:32px;background:var(--red);color:#fff;border:none;font-family:var(--font-condensed);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;letter-spacing:.04em;position:relative;flex-shrink:0}
+.drop{position:absolute;top:calc(100% + 6px);right:0;background:var(--black);border:1px solid #333;min-width:190px;display:none;z-index:200}
+.drop.open{display:block}
+.drop-info{padding:.65rem 1rem;border-bottom:1px solid #2a2a2a}
+.drop-info strong{display:block;font-family:var(--font-condensed);font-size:14px;font-weight:600;color:var(--white)}
+.drop-info span{font-size:12px;color:var(--gray-600)}
+.drop a,.drop button{display:block;width:100%;text-align:left;padding:.55rem 1rem;font-family:var(--font-condensed);font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--gray-400);text-decoration:none;background:none;border:none;cursor:pointer;transition:color .2s}
+.drop a:hover,.drop button:hover{color:var(--white)}
+.ticker-wrap{background:var(--red);overflow:hidden;border-top:1px solid var(--red-dark)}
+.ticker{display:flex;align-items:center;height:32px;white-space:nowrap;animation:ticker 35s linear infinite}
+.ticker span{font-family:var(--font-condensed);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#fff;padding:0 2.5rem}
+.ticker-sep{color:rgba(255,255,255,.4);padding:0 .5rem}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+main{max-width:1320px;margin:0 auto;padding:2rem}
+.empty-state{text-align:center;padding:5rem 2rem;border:1px dashed var(--gray-200)}
+.empty-state .big-t{font-family:var(--font-display);font-size:72px;color:var(--gray-200);line-height:1;margin-bottom:1rem}
+.empty-state h2{font-family:var(--font-condensed);font-size:22px;font-weight:700;margin-bottom:.5rem}
+.empty-state p{font-size:14px;color:var(--gray-600);margin-bottom:1.5rem}
+.btn-empty{display:inline-block;background:var(--red);color:#fff;border:none;padding:.7rem 1.75rem;font-family:var(--font-condensed);font-size:15px;font-weight:700;letter-spacing:.07em;cursor:pointer;transition:opacity .2s}
+.btn-empty:hover{opacity:.87}
+.hero{display:grid;grid-template-columns:1fr 380px;gap:0;border:1px solid var(--gray-200);margin-bottom:2rem}
+.hero-main{position:relative;cursor:pointer;overflow:hidden;min-height:420px;display:flex;flex-direction:column;justify-content:flex-end}
+.hero-main:hover .hero-img{transform:scale(1.03)}
+.hero-img{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;transition:transform .4s ease;filter:brightness(.55)}
+.hero-img-placeholder{position:absolute;inset:0;background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);display:flex;align-items:center;justify-content:center}
+.hero-img-placeholder svg{width:64px;height:64px;opacity:.15}
+.hero-content{position:relative;z-index:2;padding:2rem}
+.sport-tag{display:inline-block;font-family:var(--font-condensed);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .6rem;margin-bottom:.75rem}
+.sport-tag.football{background:var(--red);color:#fff}
+.sport-tag.basketball{background:#f97316;color:#fff}
+.sport-tag.tennis{background:#16a34a;color:#fff}
+.sport-tag.cycling{background:#7c3aed;color:#fff}
+.sport-tag.athletics{background:#0ea5e9;color:#fff}
+.sport-tag.formula1{background:#dc2626;color:#fff}
+.sport-tag.others{background:#64748b;color:#fff}
+.hero-title{font-family:var(--font-display);font-size:42px;letter-spacing:.03em;line-height:1.05;color:#fff;margin-bottom:.6rem}
+.hero-excerpt{font-size:15px;color:rgba(255,255,255,.8);line-height:1.55;margin-bottom:.8rem}
+.hero-meta{font-family:var(--font-condensed);font-size:12px;color:rgba(255,255,255,.55);letter-spacing:.04em;text-transform:uppercase}
+.hero-side{display:flex;flex-direction:column;border-left:1px solid var(--gray-200)}
+.hero-side-item{flex:1;padding:1.25rem;cursor:pointer;transition:background .2s;border-bottom:1px solid var(--gray-200);display:flex;flex-direction:column;justify-content:space-between}
+.hero-side-item:last-child{border-bottom:none}
+.hero-side-item:hover{background:var(--gray-100)}
+.hero-side-title{font-family:var(--font-condensed);font-size:17px;font-weight:700;line-height:1.3;margin-bottom:.4rem}
+.hero-side-img{width:100%;height:100px;object-fit:cover;margin-bottom:.75rem;filter:brightness(.9)}
+.hero-side-img-ph{width:100%;height:80px;background:var(--gray-200);display:flex;align-items:center;justify-content:center;margin-bottom:.75rem}
+.hero-side-img-ph svg{width:28px;height:28px;opacity:.3}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;border-left:4px solid var(--red);padding-left:.85rem}
+.sec-hdr h2{font-family:var(--font-display);font-size:28px;letter-spacing:.06em}
+.sec-more{font-family:var(--font-condensed);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-400);cursor:pointer;transition:color .2s;border:none;background:none}
+.sec-more:hover{color:var(--black)}
+.news-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--gray-200);margin-bottom:2rem}
+.news-card{padding:1.25rem;cursor:pointer;transition:background .2s;border-right:1px solid var(--gray-200)}
+.news-card:last-child{border-right:none}
+.news-card:hover{background:var(--gray-100)}
+.nc-img{width:100%;height:140px;object-fit:cover;margin-bottom:.85rem}
+.nc-img-ph{width:100%;height:140px;background:var(--gray-200);display:flex;align-items:center;justify-content:center;margin-bottom:.85rem}
+.nc-img-ph svg{width:32px;height:32px;opacity:.25}
+.nc-title{font-family:var(--font-condensed);font-size:18px;font-weight:700;line-height:1.25;margin-bottom:.4rem}
+.nc-excerpt{font-size:13px;color:var(--gray-600);line-height:1.55}
+.nc-meta{font-family:var(--font-condensed);font-size:11px;color:var(--gray-400);letter-spacing:.04em;text-transform:uppercase;margin-top:.6rem}
+.news-list{margin-bottom:2.5rem}
+.nl-item{display:grid;grid-template-columns:70px 1fr;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--gray-200);cursor:pointer;transition:opacity .2s;align-items:start}
+.nl-item:hover{opacity:.72}
+.nl-num{font-family:var(--font-display);font-size:40px;color:var(--gray-200);line-height:1}
+.nl-title{font-family:var(--font-condensed);font-size:17px;font-weight:700;line-height:1.3;margin-bottom:.3rem}
+.nl-meta{font-family:var(--font-condensed);font-size:11px;color:var(--gray-400);letter-spacing:.04em;text-transform:uppercase}
+footer{background:var(--black);padding:2rem;margin-top:2rem}
+.footer-in{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:auto 1fr;gap:3rem;align-items:start}
+.footer-brand .logo-name{font-size:20px}
+.footer-tag{font-size:13px;color:var(--gray-600);margin-top:.4rem}
+.footer-links{display:flex;flex-wrap:wrap;gap:.5rem 2rem}
+.footer-links a{font-family:var(--font-condensed);font-size:13px;color:var(--gray-600);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--white)}
+.footer-copy{border-top:1px solid #1a1a1a;margin-top:1.5rem;padding-top:1rem;font-family:var(--font-condensed);font-size:12px;color:var(--gray-600);max-width:1320px;margin-left:auto;margin-right:auto;display:flex;justify-content:space-between}
+#art-view{display:none;position:fixed;inset:0;background:var(--white);z-index:400;overflow-y:auto}
+#art-view.open{display:block}
+.art-view-hdr{background:var(--black);padding:0 2rem;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.art-view-hdr .logo-name{font-size:20px}
+.art-view-actions{display:flex;gap:.6rem;align-items:center}
+.btn-art{font-family:var(--font-condensed);font-size:12px;font-weight:700;letter-spacing:.06em;padding:.38rem .9rem;cursor:pointer;border:1px solid #444;color:var(--gray-400);background:transparent;transition:all .2s}
+.btn-art:hover{color:var(--white);border-color:var(--gray-400)}
+.art-hero-img{width:100%;max-height:440px;object-fit:cover;display:block}
+.art-body{max-width:760px;margin:0 auto;padding:2.5rem 2rem}
+.art-cat{display:inline-block;font-family:var(--font-condensed);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .6rem;margin-bottom:1rem}
+.art-title{font-family:var(--font-display);font-size:52px;letter-spacing:.03em;line-height:1.05;margin-bottom:.75rem}
+.art-excerpt{font-size:19px;color:var(--gray-600);line-height:1.6;font-style:italic;margin-bottom:1.25rem;border-left:3px solid var(--red);padding-left:1rem}
+.art-meta{display:flex;align-items:center;gap:.6rem;font-family:var(--font-condensed);font-size:12px;color:var(--gray-400);letter-spacing:.04em;text-transform:uppercase;border-top:1px solid var(--gray-200);border-bottom:1px solid var(--gray-200);padding:.75rem 0;margin-bottom:2rem}
+.art-dot{width:4px;height:4px;background:var(--gray-400);border-radius:50%;flex-shrink:0}
+.art-content{font-size:17px;line-height:1.8;color:var(--gray-800)}
+.art-content p{margin-bottom:1.25rem}
+.art-content strong{font-weight:700;color:var(--black)}
+.art-content em{font-style:italic;color:var(--gray-600)}
+.art-content h3{font-family:var(--font-display);font-size:28px;letter-spacing:.04em;margin:2rem 0 .75rem;color:var(--black)}
+.art-content blockquote{border-left:4px solid var(--red);padding:1rem 1.25rem;margin:1.5rem 0;background:var(--gray-100);font-size:18px;font-style:italic;color:var(--gray-800)}
+.art-content .img-wrap{margin:1.5rem 0}
+.art-content .img-wrap img{max-width:100%;display:block}
+.art-content .cap{font-family:var(--font-condensed);font-size:12px;color:var(--gray-400);text-align:center;margin-top:.25rem;letter-spacing:.03em}
+/* TRANSLATE TABS */
+.lang-tabs{display:flex;gap:0;flex-wrap:wrap;border-bottom:2px solid var(--gray-200);margin-bottom:2rem}
+.lang-tab{font-family:var(--font-condensed);font-size:13px;font-weight:700;letter-spacing:.06em;padding:.5rem 1.1rem;cursor:pointer;border:none;background:transparent;color:var(--gray-400);transition:all .2s;border-bottom:2px solid transparent;margin-bottom:-2px;display:flex;align-items:center;gap:.35rem;white-space:nowrap}
+.lang-tab:hover{color:var(--black)}
+.lang-tab.active{color:var(--black);border-bottom-color:var(--red)}
+.lang-tab .lang-flag{font-size:16px}
+.lang-tab .lang-spinner{width:12px;height:12px;border:2px solid var(--gray-200);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;display:none}
+.lang-tab.loading .lang-spinner{display:inline-block}
+.lang-tab.loading .lang-flag{display:none}
+.lang-tab.done .lang-flag{opacity:.7}
+@keyframes spin{to{transform:rotate(360deg)}}
+.translate-notice{font-family:var(--font-condensed);font-size:11px;color:var(--gray-400);letter-spacing:.04em;margin-bottom:1rem;text-transform:uppercase}
+/* EDITOR */
+#editor-panel{display:none;position:fixed;inset:0;background:var(--white);z-index:500;overflow-y:auto}
+#editor-panel.open{display:block}
+.ed-hdr{background:var(--black);padding:0 2rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.ed-hdr-left{display:flex;align-items:center;gap:1rem}
+.ed-hdr h2{font-family:var(--font-display);font-size:22px;letter-spacing:.06em;color:var(--white)}
+.ed-actions{display:flex;gap:.6rem}
+.btn-ed{font-family:var(--font-condensed);font-size:13px;font-weight:700;letter-spacing:.06em;padding:.42rem 1.1rem;cursor:pointer;border:1px solid #444;color:var(--gray-400);background:transparent;transition:all .2s}
+.btn-ed:hover{color:var(--white);border-color:var(--gray-400)}
+.btn-ed-red{background:var(--red);border-color:var(--red);color:#fff}
+.btn-ed-red:hover{opacity:.87;color:#fff}
+.ed-body{display:grid;grid-template-columns:1fr 320px;gap:0;min-height:calc(100vh - 58px)}
+.ed-main{padding:2rem;border-right:1px solid var(--gray-200)}
+.ed-sidebar{padding:1.5rem;background:var(--gray-100)}
+.ef{margin-bottom:1.5rem}
+.ef-label{display:block;font-family:var(--font-condensed);font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--gray-600);margin-bottom:.45rem}
+.ef-label span{color:var(--red)}
+.ef input,.ef select,.ef textarea{width:100%;border:1px solid var(--gray-200);background:#fff;padding:.7rem .85rem;font-family:var(--font-body);font-size:15px;color:var(--black);outline:none;transition:border-color .2s;border-radius:0;-webkit-appearance:none}
+.ef input:focus,.ef textarea:focus,.ef select:focus{border-color:var(--red)}
+.ef-title-input{font-family:var(--font-display)!important;font-size:28px!important;letter-spacing:.03em!important;padding:1rem!important}
+.toolbar{display:flex;align-items:center;gap:2px;flex-wrap:wrap;padding:.5rem;background:#fff;border:1px solid var(--gray-200);border-bottom:none;margin-top:1.5rem}
+.tb-btn{background:transparent;border:none;width:30px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font-body);font-size:13px;font-weight:600;color:var(--gray-600);transition:all .15s;flex-shrink:0;border-radius:2px}
+.tb-btn:hover{background:var(--gray-100);color:var(--black)}
+.tb-sep{width:1px;height:20px;background:var(--gray-200);margin:0 4px;flex-shrink:0}
+.tb-label{font-family:var(--font-condensed);font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--gray-400);padding:0 4px;white-space:nowrap}
+#rich-editor{min-height:380px;border:1px solid var(--gray-200);padding:1.25rem;outline:none;font-family:var(--font-body);font-size:16px;line-height:1.8;color:var(--black);background:#fff;caret-color:var(--red)}
+#rich-editor:focus{border-color:var(--red)}
+#rich-editor h3{font-family:var(--font-display);font-size:28px;letter-spacing:.04em;margin:1.5rem 0 .6rem}
+#rich-editor blockquote{border-left:4px solid var(--red);padding:.75rem 1rem;margin:1rem 0;background:var(--gray-100);font-style:italic;color:var(--gray-800)}
+#rich-editor strong{font-weight:700}
+#rich-editor em{font-style:italic}
+#rich-editor mark{background:#fef08a;padding:0 .15em}
+#rich-editor img{max-width:100%;margin:1rem 0;display:block}
+#rich-editor .img-wrap{margin:1rem 0}
+#rich-editor .img-wrap img{max-width:100%;display:block}
+#rich-editor .cap{font-family:var(--font-condensed);font-size:12px;color:var(--gray-400);text-align:center;margin-top:.25rem;letter-spacing:.03em}
+.cover-zone{border:2px dashed var(--gray-200);padding:2rem;text-align:center;cursor:pointer;transition:border-color .2s;position:relative;overflow:hidden;margin-bottom:1rem}
+.cover-zone:hover{border-color:var(--red)}
+.cover-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.cover-zone p{font-family:var(--font-condensed);font-size:13px;font-weight:600;letter-spacing:.05em;color:var(--gray-400);pointer-events:none}
+.cover-zone .cover-preview{width:100%;height:160px;object-fit:cover;display:none;pointer-events:none}
+.cover-zone.has-img .cover-preview{display:block}
+.cover-zone.has-img p{display:none}
+.sidebar-sec{margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--gray-200)}
+.sidebar-sec:last-child{border-bottom:none}
+.sidebar-sec h3{font-family:var(--font-condensed);font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--gray-600);margin-bottom:.85rem}
+.sport-btns{display:flex;flex-wrap:wrap;gap:.35rem}
+.sport-btn{font-family:var(--font-condensed);font-size:12px;font-weight:600;letter-spacing:.05em;padding:.3rem .7rem;border:1px solid var(--gray-200);background:#fff;cursor:pointer;color:var(--gray-600);transition:all .2s}
+.sport-btn:hover{border-color:var(--gray-400);color:var(--black)}
+.sport-btn.sel{background:var(--red);border-color:var(--red);color:#fff}
+.img-insert-row{display:grid;grid-template-columns:1fr auto;gap:.5rem;margin-bottom:.5rem}
+.img-insert-row input{font-size:13px;padding:.45rem .7rem}
+.live-badge{display:inline-flex;align-items:center;gap:.3rem;font-family:var(--font-condensed);font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--red);background:#fff0f0;border:1px solid #fca5a5;padding:.15rem .5rem;margin-left:.5rem}
+.live-dot{width:5px;height:5px;background:var(--red);border-radius:50%;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+#notif{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--black);color:#fff;padding:.7rem 1.5rem;font-family:var(--font-condensed);font-size:14px;font-weight:600;letter-spacing:.05em;z-index:9999;transition:transform .3s ease;white-space:nowrap;border-left:3px solid var(--red)}
+#notif.show{transform:translateX(-50%) translateY(0)}
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr}.hero-side{border-left:none;border-top:1px solid var(--gray-200);flex-direction:row}
+  .hero-side-item{border-right:1px solid var(--gray-200);border-bottom:none}.hero-side-item:last-child{border-right:none}
+  .news-grid{grid-template-columns:1fr}.news-card{border-right:none;border-bottom:1px solid var(--gray-200)}.news-card:last-child{border-bottom:none}
+  .ed-body{grid-template-columns:1fr}.ed-sidebar{border-top:1px solid var(--gray-200)}
+  .header-nav{display:none}.footer-in{grid-template-columns:1fr;gap:1.5rem}
+  .art-title{font-size:36px}.lang-tabs{overflow-x:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- COOKIE -->
+<div id="cookie-banner">
+  <p>Usem cookies pròpies i de tercers per millorar la teva experiència. <a href="#">Política de cookies</a>.</p>
+  <div class="ck-btns">
+    <button class="btn-ck-no" onclick="ckReject()">Essencials</button>
+    <button class="btn-ck-ok" onclick="ckAccept()">Acceptar-les totes</button>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div id="reg-overlay" class="overlay">
+  <div class="modal">
+    <div class="modal-head"><div class="logo-t"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v7M8 7h8M8 17h8M12 14v7" stroke="#fff" stroke-width="2.5" stroke-linecap="square"/></svg></div><h1>TOTS</h1></div>
+    <h2>Crea el teu compte</h2><p class="sub">Accedeix per publicar notícies esportives</p>
+    <div id="reg-err" class="form-err">Aquest correu ja existeix.</div>
+    <div class="fg"><label>Nom complet</label><input type="text" id="rg-name" placeholder="Joan García" autocomplete="name"></div>
+    <div class="fg"><label>Correu electrònic</label><input type="email" id="rg-email" placeholder="joan@exemple.cat" autocomplete="email"></div>
+    <div class="fg"><label>Contrasenya</label><input type="password" id="rg-pw" placeholder="Mínim 8 caràcters" autocomplete="new-password"></div>
+    <div class="fg-check"><input type="checkbox" id="rg-terms"><label for="rg-terms">Accepto els <a href="#">termes</a> i la <a href="#">política de privacitat</a></label></div>
+    <button class="btn-modal" onclick="doRegister()">Crear compte</button>
+    <div class="modal-sw">Ja tens compte? <a onclick="showLogin()">Inicia sessió</a></div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="log-overlay" class="overlay">
+  <div class="modal">
+    <div class="modal-head"><div class="logo-t"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v7M8 7h8M8 17h8M12 14v7" stroke="#fff" stroke-width="2.5" stroke-linecap="square"/></svg></div><h1>TOTS</h1></div>
+    <h2>Benvingut/da</h2><p class="sub">Inicia sessió al teu compte</p>
+    <div id="log-err" class="form-err">Correu o contrasenya incorrectes.</div>
+    <div class="fg"><label>Correu electrònic</label><input type="email" id="lg-email" placeholder="joan@exemple.cat" autocomplete="email"></div>
+    <div class="fg"><label>Contrasenya</label><input type="password" id="lg-pw" placeholder="La teva contrasenya" autocomplete="current-password"></div>
+    <button class="btn-modal" onclick="doLogin()">Iniciar sessió</button>
+    <div class="modal-sw">No tens compte? <a onclick="showRegister()">Registra't</a></div>
+  </div>
+</div>
+
+<!-- ARTICLE VIEW -->
+<div id="art-view">
+  <div class="art-view-hdr">
+    <a class="logo" href="#" onclick="closeArt();return false;">
+      <div class="logo-t"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v7M8 7h8M8 17h8M12 14v7" stroke="#fff" stroke-width="2.5" stroke-linecap="square"/></svg></div>
+      <div><div class="logo-name">TOTS</div></div>
+    </a>
+    <div class="art-view-actions">
+      <button class="btn-art" onclick="closeArt()">← Tornar</button>
+    </div>
+  </div>
+  <div id="art-view-inner"></div>
+</div>
+
+<!-- EDITOR -->
+<div id="editor-panel">
+  <div class="ed-hdr">
+    <div class="ed-hdr-left">
+      <div class="logo-t"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v7M8 7h8M8 17h8M12 14v7" stroke="#fff" stroke-width="2.5" stroke-linecap="square"/></svg></div>
+      <h2>Editor de notícies</h2>
+    </div>
+    <div class="ed-actions">
+      <button class="btn-ed" onclick="closeEditor()">Cancel·lar</button>
+      <button class="btn-ed btn-ed-red" onclick="publishNow()">⚡ Publicar ara</button>
+    </div>
+  </div>
+  <div class="ed-body">
+    <div class="ed-main">
+      <div class="ef"><label class="ef-label">Titular <span>*</span></label><input type="text" class="ef-title-input" id="ed-title" placeholder="Escriu el titular de la notícia..."></div>
+      <div class="ef"><label class="ef-label">Entradeta / Resum</label><input type="text" id="ed-excerpt" placeholder="Un breu resum que apareixerà a la portada..."></div>
+      <label class="ef-label" style="margin-top:.5rem">Cos de la notícia <span style="color:var(--red)">*</span></label>
+      <div class="toolbar" id="toolbar">
+        <span class="tb-label">TEXT</span>
+        <button class="tb-btn" title="Negreta" onclick="fmt('bold')"><b>B</b></button>
+        <button class="tb-btn" title="Cursiva" onclick="fmt('italic')"><i>I</i></button>
+        <button class="tb-btn" title="Subratllat" onclick="fmt('underline')"><u>U</u></button>
+        <button class="tb-btn" title="Ratllat" onclick="fmt('strikeThrough')"><s>S</s></button>
+        <div class="tb-sep"></div>
+        <span class="tb-label">MIDA</span>
+        <button class="tb-btn" title="Títol de secció" onclick="fmt('formatBlock','h3')" style="font-size:11px;width:36px">H3</button>
+        <button class="tb-btn" title="Normal" onclick="fmt('formatBlock','p')" style="font-size:11px;width:36px">¶</button>
+        <div class="tb-sep"></div>
+        <span class="tb-label">COLOR</span>
+        <button class="tb-btn" title="Ressaltar groc" onclick="applyHighlight('#fef08a')" style="background:#fef08a;color:#92400e;width:22px;height:22px;font-size:10px">A</button>
+        <button class="tb-btn" title="Ressaltar vermell" onclick="applyHighlight('#fee2e2')" style="background:#fee2e2;color:#991b1b;width:22px;height:22px;font-size:10px">A</button>
+        <button class="tb-btn" title="Ressaltar verd" onclick="applyHighlight('#dcfce7')" style="background:#dcfce7;color:#166534;width:22px;height:22px;font-size:10px">A</button>
+        <button class="tb-btn" title="Ressaltar blau" onclick="applyHighlight('#dbeafe')" style="background:#dbeafe;color:#1e40af;width:22px;height:22px;font-size:10px">A</button>
+        <button class="tb-btn" title="Color de text vermell" onclick="applyColor('#e8001d')" style="font-size:11px;font-weight:700;color:#e8001d">A</button>
+        <button class="tb-btn" title="Treure format" onclick="fmt('removeFormat')" style="font-size:10px">✕</button>
+        <div class="tb-sep"></div>
+        <span class="tb-label">BLOC</span>
+        <button class="tb-btn" title="Cita destacada" onclick="fmt('formatBlock','blockquote')" style="font-size:16px;font-style:italic">"</button>
+        <button class="tb-btn" title="Llista" onclick="fmt('insertUnorderedList')" style="font-size:14px">≡</button>
+        <button class="tb-btn" title="Llista numerada" onclick="fmt('insertOrderedList')" style="font-size:14px">1.</button>
+        <div class="tb-sep"></div>
+        <span class="tb-label">IMATGE</span>
+        <button class="tb-btn" title="Inserir imatge inline" onclick="showImgInsert()" style="font-size:14px">🖼</button>
+      </div>
+      <div id="rich-editor" contenteditable="true" spellcheck="true"></div>
+      <div id="img-insert-ui" style="display:none;background:var(--gray-100);border:1px solid var(--gray-200);padding:1rem;margin-top:.5rem">
+        <p style="font-family:var(--font-condensed);font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--gray-600);margin-bottom:.6rem">Inserir imatge al cos</p>
+        <div class="img-insert-row">
+          <input type="file" id="inline-img-file" accept="image/*" style="padding:.35rem .5rem;font-size:12px">
+          <button class="btn-ed btn-ed-red" onclick="insertInlineImg()" style="padding:.4rem .8rem;font-size:12px">Inserir</button>
+        </div>
+        <div class="ef" style="margin-bottom:.5rem"><input type="text" id="inline-img-cap" placeholder="Peu de foto (opcional)" style="font-size:13px;padding:.4rem .7rem"></div>
+        <button onclick="document.getElementById('img-insert-ui').style.display='none'" style="font-family:var(--font-condensed);font-size:11px;color:var(--gray-400);background:none;border:none;cursor:pointer">Tancar</button>
+      </div>
+    </div>
+    <div class="ed-sidebar">
+      <div class="sidebar-sec">
+        <h3>Imatge de portada</h3>
+        <div class="cover-zone" id="cover-zone">
+          <input type="file" id="cover-input" accept="image/*" onchange="loadCover(this)">
+          <img class="cover-preview" id="cover-preview" alt="Portada">
+          <p>📷 Fes clic o arrossega una imatge</p>
+        </div>
+        <div class="ef" style="margin-bottom:0"><label class="ef-label" style="margin-bottom:.35rem">Peu de foto de portada</label><input type="text" id="cover-cap" placeholder="Crèdit o descripció..." style="font-size:13px;padding:.45rem .7rem"></div>
+      </div>
+      <div class="sidebar-sec">
+        <h3>Categoria esportiva <span style="color:var(--red)">*</span></h3>
+        <div class="sport-btns" id="sport-btns">
+          <button class="sport-btn sel" data-sport="football" onclick="selectSport(this)">⚽ Futbol</button>
+          <button class="sport-btn" data-sport="basketball" onclick="selectSport(this)">🏀 Bàsquet</button>
+          <button class="sport-btn" data-sport="tennis" onclick="selectSport(this)">🎾 Tennis</button>
+          <button class="sport-btn" data-sport="cycling" onclick="selectSport(this)">🚴 Ciclisme</button>
+          <button class="sport-btn" data-sport="athletics" onclick="selectSport(this)">🏃 Atletisme</button>
+          <button class="sport-btn" data-sport="formula1" onclick="selectSport(this)">🏎️ F1</button>
+          <button class="sport-btn" data-sport="others" onclick="selectSport(this)">🏅 Altres</button>
+        </div>
+      </div>
+      <div class="sidebar-sec">
+        <h3>Autor/a</h3>
+        <div class="ef" style="margin-bottom:0"><input type="text" id="ed-author" placeholder="Nom de l'autor/a"></div>
+      </div>
+      <div class="sidebar-sec">
+        <h3>Destacar com a</h3>
+        <div class="sport-btns">
+          <button class="sport-btn sel" id="feat-normal" onclick="setFeatured('normal',this)">Normal</button>
+          <button class="sport-btn" id="feat-top" onclick="setFeatured('top',this)">🔥 Destacat</button>
+          <button class="sport-btn" id="feat-breaking" onclick="setFeatured('breaking',this)">⚡ Última hora</button>
+        </div>
+      </div>
+      <div class="sidebar-sec" style="background:#fff0f0;border:1px solid #fecaca;padding:.85rem">
+        <h3 style="color:var(--red);margin-bottom:.5rem">⚡ Publicar</h3>
+        <p style="font-size:12px;color:var(--gray-600);line-height:1.55;margin-bottom:.75rem">La notícia s'afegirà a la portada i es guardarà permanentment.</p>
+        <button class="btn-ed btn-ed-red" style="width:100%;padding:.65rem" onclick="publishNow()">Publicar ara</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="notif"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-bar">
+    <a href="#" class="logo" onclick="return false;">
+      <div class="logo-t"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v7M8 7h8M8 17h8M12 14v7" stroke="#fff" stroke-width="2.5" stroke-linecap="square"/></svg></div>
+      <div><div class="logo-name">TOTS</div><div class="logo-sport">Esports</div></div>
+    </a>
+    <nav class="header-nav" id="header-nav">
+      <a href="#" class="active" onclick="filterSport('all');setActiveNav(this);return false;">Tot</a>
+      <a href="#" onclick="filterSport('football');setActiveNav(this);return false;">Futbol</a>
+      <a href="#" onclick="filterSport('basketball');setActiveNav(this);return false;">Bàsquet</a>
+      <a href="#" onclick="filterSport('tennis');setActiveNav(this);return false;">Tennis</a>
+      <a href="#" onclick="filterSport('cycling');setActiveNav(this);return false;">Ciclisme</a>
+      <a href="#" onclick="filterSport('formula1');setActiveNav(this);return false;">F1</a>
+      <a href="#" onclick="filterSport('athletics');setActiveNav(this);return false;">Atletisme</a>
+    </nav>
+    <div class="header-actions" id="hdr-actions"></div>
+  </div>
+</header>
+<div class="ticker-wrap"><div class="ticker" id="ticker-inner"><span>TOTS ESPORTS<span class="ticker-sep">·</span>Totes les notícies del món esportiu<span class="ticker-sep">·</span>Publica la teva primera notícia<span class="ticker-sep">·</span></span><span>TOTS ESPORTS<span class="ticker-sep">·</span>Totes les notícies del món esportiu<span class="ticker-sep">·</span>Publica la teva primera notícia<span class="ticker-sep">·</span></span></div></div>
+
+<main id="main-content"></main>
+
+<footer>
+  <div class="footer-in">
+    <div class="footer-brand">
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <div class="logo-t" style="width:24px;height:24px;"><svg viewBox="0 0 24 24" fill="none" style="width:15px;height:15px;"><path d="M12 3v7M8 7h8M8 17h8M12 14v7" stroke="#fff" stroke-width="2.5" stroke-linecap="square"/></svg></div>
+        <span class="logo-name" style="color:var(--white);">TOTS</span><span class="logo-sport">Esports</span>
+      </div>
+      <p class="footer-tag">El teu portal de notícies esportives</p>
+    </div>
+    <div class="footer-links">
+      <a href="#">Qui som</a><a href="#">Política editorial</a><a href="#">Privacitat</a>
+      <a href="#">Contacte</a><a href="#">Cookies</a><a href="#">Avís legal</a>
+    </div>
+  </div>
+  <div class="footer-copy"><span>© 2025 TOTS Esports — Tots els drets reservats</span><span>Fet amb ♥ a Catalunya</span></div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════════════════════
+const SPORT_LABELS={football:'Futbol',basketball:'Bàsquet',tennis:'Tennis',cycling:'Ciclisme',athletics:'Atletisme',formula1:'F1',others:'Altres'};
+const SPORT_ICONS={football:'⚽',basketball:'🏀',tennis:'🎾',cycling:'🚴',athletics:'🏃',formula1:'🏎️',others:'🏅'};
+
+// 6 idiomes: original + 5 universals
+const LANGS=[
+  {code:'ca', label:'Català',    flag:'🇦🇩', name:'Catalan'},
+  {code:'es', label:'Castellà',  flag:'🇪🇸', name:'Spanish'},
+  {code:'en', label:'English',   flag:'🇬🇧', name:'English'},
+  {code:'fr', label:'Français',  flag:'🇫🇷', name:'French'},
+  {code:'zh', label:'中文',       flag:'🇨🇳', name:'Chinese (Simplified)'},
+  {code:'ar', label:'العربية',   flag:'🇸🇦', name:'Arabic'},
+];
+
+const STORAGE_KEY = 'tots_articles_v2';
+
+// ═══════════════════════════════════════════════════════════════════
+// STATE  — articles s'inicialitzen des de localStorage
+// ═══════════════════════════════════════════════════════════════════
+let articles = loadArticles();
+let currentUser = null;
+let currentFilter = 'all';
+let editorSport = 'football';
+let editorFeatured = 'normal';
+let savedRange = null;
+// Cache de traduccions: {articleId: {langCode: {title,excerpt,bodyHTML}}}
+let translationCache = {};
+
+// ═══════════════════════════════════════════════════════════════════
+// PERSISTÈNCIA
+// ═══════════════════════════════════════════════════════════════════
+function loadArticles(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return [];
+    const arr = JSON.parse(raw);
+    // Restaurar objectes Date
+    return arr.map(a=>({...a, date: new Date(a.date)}));
+  } catch(e){ return []; }
+}
+
+function saveArticles(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
+  } catch(e){
+    // Si el localStorage és ple (imatges pesades), avisar
+    notif('⚠️ Espai d\'emmagatzematge ple. Imatges molt pesades poden causar aquest error.');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', ()=>{
+  if(localStorage.getItem('tots_ck')) document.getElementById('cookie-banner').style.display='none';
+  const u = localStorage.getItem('tots_user');
+  if(u){ currentUser=JSON.parse(u); }
+  renderHeader();
+  renderMain();
+  updateTicker();
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// COOKIES
+// ═══════════════════════════════════════════════════════════════════
+function ckAccept(){ localStorage.setItem('tots_ck','all'); document.getElementById('cookie-banner').style.display='none'; }
+function ckReject(){ localStorage.setItem('tots_ck','ess'); document.getElementById('cookie-banner').style.display='none'; }
+
+// ═══════════════════════════════════════════════════════════════════
+// HEADER
+// ═══════════════════════════════════════════════════════════════════
+function renderHeader(){
+  const el=document.getElementById('hdr-actions');
+  if(currentUser){
+    const init=currentUser.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+    el.innerHTML=`<button class="btn-hdr btn-hdr-red" onclick="openEditor()">+ Nova notícia</button>
+    <div style="position:relative" id="uMenu">
+      <button class="user-av" onclick="toggleDrop()">${init}</button>
+      <div class="drop" id="drop">
+        <div class="drop-info"><strong>${currentUser.name}</strong><span>${currentUser.email}</span></div>
+        <button onclick="openEditor()">+ Publicar notícia</button>
+        <hr style="border:none;border-top:1px solid #2a2a2a;margin:.25rem 0">
+        <button onclick="doLogout()">Tancar sessió</button>
+      </div>
+    </div>`;
+  } else {
+    el.innerHTML=`<button class="btn-hdr" onclick="showLogin()">Entrar</button><button class="btn-hdr btn-hdr-red" onclick="showRegister()">Registrar-se</button>`;
+  }
+}
+function toggleDrop(){ document.getElementById('drop').classList.toggle('open'); }
+document.addEventListener('click',e=>{const m=document.getElementById('uMenu');if(m&&!m.contains(e.target)){const d=document.getElementById('drop');if(d)d.classList.remove('open');}});
+
+// ═══════════════════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════════════════
+let users=JSON.parse(localStorage.getItem('tots_users')||'[]');
+function showRegister(){closeOverlays();document.getElementById('reg-overlay').classList.add('active');document.body.style.overflow='hidden';}
+function showLogin(){closeOverlays();document.getElementById('log-overlay').classList.add('active');document.body.style.overflow='hidden';}
+function closeOverlays(){document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('active'));}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o){closeOverlays();document.body.style.overflow='';}  }));
+function doRegister(){
+  const name=document.getElementById('rg-name').value.trim();
+  const email=document.getElementById('rg-email').value.trim();
+  const pw=document.getElementById('rg-pw').value;
+  const terms=document.getElementById('rg-terms').checked;
+  if(!name||!email||!pw||!terms){notif('Omple tots els camps i accepta els termes');return;}
+  if(pw.length<8){notif('La contrasenya ha de tenir mínim 8 caràcters');return;}
+  if(users.find(u=>u.email===email)){document.getElementById('reg-err').classList.add('on');return;}
+  users.push({name,email,pw});
+  localStorage.setItem('tots_users',JSON.stringify(users));
+  currentUser={name,email};
+  localStorage.setItem('tots_user',JSON.stringify(currentUser));
+  closeOverlays();document.body.style.overflow='';
+  renderHeader();notif(`Benvingut/da, ${name}! 🎉`);
+}
+function doLogin(){
+  const email=document.getElementById('lg-email').value.trim();
+  const pw=document.getElementById('lg-pw').value;
+  const u=users.find(x=>x.email===email&&x.pw===pw);
+  if(!u){document.getElementById('log-err').classList.add('on');return;}
+  currentUser={name:u.name,email:u.email};
+  localStorage.setItem('tots_user',JSON.stringify(currentUser));
+  closeOverlays();document.body.style.overflow='';
+  renderHeader();notif(`Benvingut/da, ${u.name}!`);
+}
+function doLogout(){currentUser=null;localStorage.removeItem('tots_user');renderHeader();notif('Sessió tancada');}
+
+// ═══════════════════════════════════════════════════════════════════
+// EDITOR
+// ═══════════════════════════════════════════════════════════════════
+function openEditor(){
+  if(!currentUser){notif('Has d\'iniciar sessió per publicar');showLogin();return;}
+  document.getElementById('ed-title').value='';
+  document.getElementById('ed-excerpt').value='';
+  document.getElementById('ed-author').value=currentUser.name;
+  document.getElementById('rich-editor').innerHTML='';
+  document.getElementById('cover-zone').classList.remove('has-img');
+  document.getElementById('cover-preview').src='';
+  document.getElementById('cover-preview').dataset.b64='';
+  document.getElementById('cover-cap').value='';
+  editorSport='football'; editorFeatured='normal';
+  document.querySelectorAll('.sport-btn[data-sport]').forEach(b=>b.classList.toggle('sel',b.dataset.sport==='football'));
+  document.getElementById('feat-normal').classList.add('sel');
+  document.getElementById('feat-top').classList.remove('sel');
+  document.getElementById('feat-breaking').classList.remove('sel');
+  document.getElementById('editor-panel').classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('ed-title').focus(),100);
+}
+function closeEditor(){document.getElementById('editor-panel').classList.remove('open');document.body.style.overflow='';}
+function selectSport(btn){editorSport=btn.dataset.sport;document.querySelectorAll('.sport-btn[data-sport]').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');}
+function setFeatured(v,btn){editorFeatured=v;document.querySelectorAll('#feat-normal,#feat-top,#feat-breaking').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');}
+
+function publishNow(){
+  const title=document.getElementById('ed-title').value.trim();
+  const body=document.getElementById('rich-editor').innerHTML.trim();
+  if(!title||!body||body==='<br>'){notif('El titular i el cos són obligatoris');return;}
+  const coverB64=document.getElementById('cover-preview').dataset.b64||'';
+  const art={
+    id: Date.now(),
+    title,
+    excerpt: document.getElementById('ed-excerpt').value.trim(),
+    bodyHTML: body,
+    sport: editorSport,
+    featured: editorFeatured,
+    author: document.getElementById('ed-author').value.trim()||currentUser.name,
+    date: new Date(),
+    coverB64,
+    coverCap: document.getElementById('cover-cap').value.trim()
+  };
+  articles.unshift(art);
+  saveArticles();   // ← GUARDAR PERMANENTMENT
+  updateTicker();
+  closeEditor();
+  renderMain();
+  notif('Notícia publicada i guardada! ⚡');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// COVER IMAGE
+// ═══════════════════════════════════════════════════════════════════
+function loadCover(inp){
+  const file=inp.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const prev=document.getElementById('cover-preview');
+    prev.src=e.target.result;prev.dataset.b64=e.target.result;
+    document.getElementById('cover-zone').classList.add('has-img');
+  };
+  r.readAsDataURL(file);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RICH EDITOR
+// ═══════════════════════════════════════════════════════════════════
+function fmt(cmd,val){document.getElementById('rich-editor').focus();document.execCommand(cmd,false,val||null);}
+function applyHighlight(color){document.getElementById('rich-editor').focus();document.execCommand('hiliteColor',false,color);}
+function applyColor(color){document.getElementById('rich-editor').focus();document.execCommand('foreColor',false,color);}
+function saveSelection(){const sel=window.getSelection();if(sel.rangeCount>0)savedRange=sel.getRangeAt(0);}
+function restoreSelection(){if(savedRange){const sel=window.getSelection();sel.removeAllRanges();sel.addRange(savedRange);}}
+function showImgInsert(){saveSelection();const ui=document.getElementById('img-insert-ui');ui.style.display=ui.style.display==='none'?'block':'none';}
+function insertInlineImg(){
+  const file=document.getElementById('inline-img-file').files[0];
+  const cap=document.getElementById('inline-img-cap').value.trim();
+  if(!file){notif('Selecciona una imatge');return;}
+  const r=new FileReader();
+  r.onload=e=>{
+    restoreSelection();
+    document.getElementById('rich-editor').focus();
+    const wrap=`<div class="img-wrap"><img src="${e.target.result}" style="max-width:100%;display:block;">${cap?`<div class="cap">${cap}</div>`:''}</div>`;
+    document.execCommand('insertHTML',false,wrap);
+    document.getElementById('img-insert-ui').style.display='none';
+    document.getElementById('inline-img-file').value='';
+    document.getElementById('inline-img-cap').value='';
+  };
+  r.readAsDataURL(file);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER PORTADA
+// ═══════════════════════════════════════════════════════════════════
+function renderMain(){
+  const mc=document.getElementById('main-content');
+  const filtered=currentFilter==='all'?articles:articles.filter(a=>a.sport===currentFilter);
+  if(!filtered.length){mc.innerHTML=renderEmpty();return;}
+  let html='';
+  const top=filtered[0];
+  const side=filtered.slice(1,3);
+  html+=`<div class="hero"><div class="hero-main" onclick="openArt(${top.id})">`;
+  if(top.coverB64) html+=`<img class="hero-img" src="${top.coverB64}" alt="">`;
+  else html+=`<div class="hero-img-placeholder"><svg viewBox="0 0 24 24" fill="none"><path d="M4 16l4-4 4 4 4-4 4 4" stroke="#fff" stroke-width="1"/></svg></div>`;
+  html+=`<div class="hero-content">`;
+  if(top.featured==='breaking') html+=`<span class="sport-tag football" style="background:#dc2626">⚡ ÚLTIMA HORA</span>&nbsp;`;
+  else if(top.featured==='top') html+=`<span class="sport-tag football" style="background:#f97316">🔥 DESTACAT</span>&nbsp;`;
+  html+=`<span class="sport-tag ${top.sport}">${SPORT_ICONS[top.sport]} ${SPORT_LABELS[top.sport]}</span>
+    <h2 class="hero-title">${top.title}</h2>
+    ${top.excerpt?`<p class="hero-excerpt">${top.excerpt}</p>`:''}
+    <p class="hero-meta">${top.author} · ${timeAgo(top.date)}</p>
+  </div></div>`;
+  if(side.length){
+    html+=`<div class="hero-side">`;
+    side.forEach(a=>{
+      html+=`<div class="hero-side-item" onclick="openArt(${a.id})"><div>`;
+      if(a.coverB64) html+=`<img class="hero-side-img" src="${a.coverB64}" alt="">`;
+      else html+=`<div class="hero-side-img-ph"><svg viewBox="0 0 24 24" fill="none"><path d="M4 16l4-4 4 4 4-4 4 4" stroke="#999" stroke-width="1.5"/></svg></div>`;
+      html+=`<span class="sport-tag ${a.sport}">${SPORT_ICONS[a.sport]} ${SPORT_LABELS[a.sport]}</span>
+        <p class="hero-side-title">${a.title}</p></div>
+        <p class="nc-meta">${a.author} · ${timeAgo(a.date)}</p>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  html+=`</div>`;
+  const grid=filtered.slice(3,6);
+  if(grid.length){
+    html+=`<div class="sec-hdr"><h2>Darreres notícies <span class="live-badge"><span class="live-dot"></span>En viu</span></h2><button class="sec-more" onclick="openEditor()">+ Nova</button></div>`;
+    html+=`<div class="news-grid">`;
+    grid.forEach(a=>{
+      html+=`<div class="news-card" onclick="openArt(${a.id})">`;
+      if(a.coverB64) html+=`<img class="nc-img" src="${a.coverB64}" alt="">`;
+      else html+=`<div class="nc-img-ph"><svg viewBox="0 0 24 24" fill="none"><path d="M4 16l4-4 4 4 4-4 4 4" stroke="#bbb" stroke-width="1.5"/></svg></div>`;
+      html+=`<span class="sport-tag ${a.sport}">${SPORT_ICONS[a.sport]} ${SPORT_LABELS[a.sport]}</span>
+        <p class="nc-title">${a.title}</p>
+        ${a.excerpt?`<p class="nc-excerpt">${a.excerpt}</p>`:''}
+        <p class="nc-meta">${a.author} · ${timeAgo(a.date)}</p>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  const rest=filtered.slice(6,14);
+  if(rest.length){
+    html+=`<div class="sec-hdr"><h2>Més notícies</h2></div><div class="news-list">`;
+    rest.forEach((a,i)=>{
+      html+=`<div class="nl-item" onclick="openArt(${a.id})">
+        <span class="nl-num">0${i+1}</span>
+        <div><span class="sport-tag ${a.sport}">${SPORT_ICONS[a.sport]} ${SPORT_LABELS[a.sport]}</span>
+        <p class="nl-title">${a.title}</p>
+        <p class="nl-meta">${a.author} · ${timeAgo(a.date)}</p></div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  mc.innerHTML=html;
+}
+
+function renderEmpty(){
+  const loggedIn=!!currentUser;
+  return `<div class="empty-state"><div class="big-t">T</div>
+    <h2>Encara no hi ha notícies</h2>
+    <p>${loggedIn?'Sigues el primer en publicar una notícia esportiva a TOTS!':'Inicia sessió o registra\'t per publicar la primera notícia.'}</p>
+    ${loggedIn?`<button class="btn-empty" onclick="openEditor()">⚡ Publicar la primera notícia</button>`:`<button class="btn-empty" onclick="showRegister()">Registrar-se i publicar</button>`}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ARTICLE READER  —  amb traducció automàtica a 6 idiomes
+// ═══════════════════════════════════════════════════════════════════
+function openArt(id){
+  const a=articles.find(x=>x.id===id);if(!a)return;
+
+  // Construir les tabs d'idioma
+  const tabsHTML = LANGS.map(l=>`
+    <button class="lang-tab${l.code==='ca'?' active':''}" id="tab-${l.code}" onclick="switchLang(${id},'${l.code}')">
+      <span class="lang-flag">${l.flag}</span>
+      <span class="lang-spinner"></span>
+      ${l.label}
+    </button>`).join('');
+
+  let html='';
+  if(a.coverB64) html+=`<img class="art-hero-img" src="${a.coverB64}" alt="${a.coverCap||''}">`;
+  html+=`<div class="art-body">
+    <div class="lang-tabs">${tabsHTML}</div>
+    <p class="translate-notice" id="tr-notice">Fes clic en un idioma per traduir automàticament</p>
+    <span class="art-cat ${a.sport}">${SPORT_ICONS[a.sport]} ${SPORT_LABELS[a.sport]}</span>
+    <h1 class="art-title" id="art-title">${a.title}</h1>
+    ${a.excerpt?`<p class="art-excerpt" id="art-excerpt">${a.excerpt}</p>`:'<p class="art-excerpt" id="art-excerpt" style="display:none"></p>'}
+    <div class="art-meta">
+      <span id="art-author">${a.author}</span><span class="art-dot"></span>
+      <span>${new Date(a.date).toLocaleDateString('ca-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</span>
+      <span class="art-dot"></span><span>${timeAgo(a.date)}</span>
+    </div>
+    <div class="art-content" id="art-content">${a.bodyHTML}</div>
+    ${a.coverCap?`<p class="nc-meta" style="margin-top:2rem;text-align:center">${a.coverCap}</p>`:''}
+  </div>`;
+
+  document.getElementById('art-view-inner').innerHTML=html;
+  document.getElementById('art-view').dataset.artId=id;
+  document.getElementById('art-view').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById('art-view').scrollTop=0;
+
+  // Guardar contingut original al cache com a 'ca'
+  if(!translationCache[id]) translationCache[id]={};
+  translationCache[id]['ca']={
+    title: a.title,
+    excerpt: a.excerpt||'',
+    bodyHTML: a.bodyHTML
+  };
+
+  // Iniciar traduccions en paral·lel en segon pla
+  startBackgroundTranslations(id, a);
+}
+
+function closeArt(){document.getElementById('art-view').classList.remove('open');document.body.style.overflow='';}
+
+// Iniciar totes les traduccions en paral·lel de fons
+function startBackgroundTranslations(id, a){
+  const langsToTranslate = LANGS.filter(l=>l.code!=='ca');
+  langsToTranslate.forEach(l=>{
+    // Marcar tab com loading si no tenim traducció
+    if(!translationCache[id]||!translationCache[id][l.code]){
+      const tab=document.getElementById(`tab-${l.code}`);
+      if(tab) tab.classList.add('loading');
+      fetchTranslation(id, a, l.code, l.name).then(result=>{
+        if(!translationCache[id]) translationCache[id]={};
+        translationCache[id][l.code]=result;
+        const t=document.getElementById(`tab-${l.code}`);
+        if(t){ t.classList.remove('loading'); t.classList.add('done'); }
+      }).catch(()=>{
+        const t=document.getElementById(`tab-${l.code}`);
+        if(t) t.classList.remove('loading');
+      });
+    }
+  });
+}
+
+async function fetchTranslation(id, a, langCode, langName){
+  const bodyText=a.bodyHTML.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+  const prompt=`You are a professional sports journalist translator. Translate this sports article to ${langName}.
+Return ONLY a raw JSON object (no markdown, no backticks, no explanation) with exactly these keys:
+{"title":"...","excerpt":"...","bodyHTML":"..."}
+Rules:
+- Keep HTML tags intact in bodyHTML
+- Translate all text content including inside HTML tags
+- Preserve sport terminology correctly
+- For Arabic: use right-to-left naturally
+- For Chinese: use Simplified Chinese
+
+Article title: ${a.title}
+Article excerpt: ${a.excerpt||''}
+Article body (HTML): ${a.bodyHTML}`;
+
+  const res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:1500,
+      messages:[{role:'user',content:prompt}]
+    })
+  });
+  const data=await res.json();
+  let raw=data.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+  raw=raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/```\s*$/,'').trim();
+  return JSON.parse(raw);
+}
+
+function switchLang(id, langCode){
+  // Actualitzar tabs actives
+  document.querySelectorAll('.lang-tab').forEach(t=>t.classList.remove('active'));
+  const activeTab=document.getElementById(`tab-${langCode}`);
+  if(activeTab) activeTab.classList.add('active');
+
+  const cache=translationCache[id];
+  if(cache&&cache[langCode]){
+    applyTranslation(langCode, cache[langCode]);
+  } else {
+    // Encara no disponible — esperar
+    const notice=document.getElementById('tr-notice');
+    if(notice) notice.textContent='Traduint... un moment';
+    // Polling cada 400ms fins tenir-la
+    const interval=setInterval(()=>{
+      if(translationCache[id]&&translationCache[id][langCode]){
+        clearInterval(interval);
+        applyTranslation(langCode, translationCache[id][langCode]);
+      }
+    },400);
+    // Timeout de seguretat 30s
+    setTimeout(()=>clearInterval(interval), 30000);
+  }
+}
+
+function applyTranslation(langCode, data){
+  const isRTL = langCode==='ar';
+  const artView=document.getElementById('art-view');
+  artView.dir=isRTL?'rtl':'ltr';
+
+  const titleEl=document.getElementById('art-title');
+  const excEl=document.getElementById('art-excerpt');
+  const contentEl=document.getElementById('art-content');
+  const notice=document.getElementById('tr-notice');
+
+  if(titleEl) titleEl.textContent=data.title||'';
+  if(excEl){
+    if(data.excerpt){ excEl.textContent=data.excerpt; excEl.style.display=''; }
+    else excEl.style.display='none';
+  }
+  if(contentEl) contentEl.innerHTML=data.bodyHTML||'';
+  if(notice){
+    const lang=LANGS.find(l=>l.code===langCode);
+    notice.textContent= langCode==='ca' ? 'Contingut original' : `✓ Traduït a ${lang?lang.label:langCode}`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FILTER & NAV
+// ═══════════════════════════════════════════════════════════════════
+function filterSport(s){currentFilter=s;renderMain();}
+function setActiveNav(el){document.querySelectorAll('.header-nav a').forEach(a=>a.classList.remove('active'));el.classList.add('active');}
+
+// ═══════════════════════════════════════════════════════════════════
+// TICKER
+// ═══════════════════════════════════════════════════════════════════
+function updateTicker(){
+  const items=articles.length
+    ? articles.slice(0,8).map(a=>`${SPORT_ICONS[a.sport]} ${a.title}`)
+    : ['TOTS ESPORTS','Totes les notícies del món esportiu','Publica la teva primera notícia'];
+  const rep=items.join('<span class="ticker-sep">·</span>');
+  const t=document.getElementById('ticker-inner');
+  t.innerHTML=`<span>${rep}<span class="ticker-sep">·</span></span><span>${rep}<span class="ticker-sep">·</span></span>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════════
+function timeAgo(d){
+  const s=(Date.now()-new Date(d))/1000;
+  if(s<60)return'Ara mateix';
+  if(s<3600)return`Fa ${Math.floor(s/60)} min`;
+  if(s<86400)return`Fa ${Math.floor(s/3600)} h`;
+  return`Fa ${Math.floor(s/86400)} dies`;
+}
+let _nt=null;
+function notif(msg){
+  const n=document.getElementById('notif');
+  n.textContent=msg;n.classList.add('show');
+  if(_nt)clearTimeout(_nt);
+  _nt=setTimeout(()=>n.classList.remove('show'),3500);
+}
+</script>
+</body>
+</html>
